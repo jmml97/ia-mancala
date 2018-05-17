@@ -1,5 +1,7 @@
 /*
  * Croqueta.cpp
+ * Implementación de un Bot que juega a Mancala utilizando la estrategia
+ * conocida como "poda alfa-beta".
  *
  *  Created on: 15 mayo 2018
  *      Author: jmml
@@ -36,14 +38,24 @@ string Croqueta::getName()
     return "Croqueta"; // Sustituir por el nombre del bot
 }
 
-std::pair<double, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
+std::pair<int, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
         int beta, bool maximize)
 {
 
     if (depth == 0 || node.state.isFinalState()) {
 
         Player player = this->getPlayer();
-        double value;
+
+        // La heurística que vamos a utilizar valora dos elementos del juego:
+        //
+        // - Nuestra puntuación respecto a la del adversario, que queremos
+        //   maximizar
+        // - Los puntos que necesita el adversario para ganar, que queremos
+        //   minimizar
+        //
+        //  Nuestra heurística será por tanto:
+        //    puntuación_jugador - puntuación_adversario
+        //                       + puntos_que_necesita_adversario
 
         int score = node.state.getScore(player);
         int opponent_score;
@@ -56,9 +68,9 @@ std::pair<double, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
 
         int opponent_win_short_by = 24 - opponent_score;
 
-        value = score - opponent_score + opponent_win_short_by;
+        int value = score - opponent_score + opponent_win_short_by;
 
-        return std::make_pair(value, M_NONE);// valor heurístico del nodo
+        return std::make_pair(value, M_NONE);
     }
 
     if (maximize) {
@@ -70,6 +82,8 @@ std::pair<double, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
 
             int value;
 
+            // Tener que maximizar o minimizar el siguiente nodo del árbol
+            // dependerá de si vuelve a ser el turno del bot.
             if (child_node.state.getCurrentPlayer() == node.state.getCurrentPlayer()) {
                 value = AlphaBeta(child_node, depth - 1, alpha, beta, true).first;
             } else {
@@ -99,6 +113,8 @@ std::pair<double, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
 
             int value;
 
+            // Tener que maximizar o minimizar el siguiente nodo del árbol
+            // dependerá de si vuelve a ser el turno del bot.
             if (child_node.state.getCurrentPlayer() == node.state.getCurrentPlayer()) {
                 value = AlphaBeta(child_node, depth - 1, alpha, beta, false).first;
             } else {
