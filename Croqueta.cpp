@@ -13,9 +13,13 @@
 #include <limits>       // std::numeric_limits
 #include <algorithm>    // std::max
 #include <utility>      // std::pair, std::make_pair
+#include <chrono>       // std::chrono
 
 #include "Croqueta.h"
 using namespace std;
+
+std::chrono::time_point<std::chrono::high_resolution_clock> start;
+std::chrono::milliseconds limit(1900);
 
 Croqueta::Croqueta()
 {
@@ -41,35 +45,29 @@ string Croqueta::getName()
 std::pair<double, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
         int beta, bool maximize)
 {
+    auto now = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> fdiff = now - start;
+    std::chrono::milliseconds diff = std::chrono::duration_cast<std::chrono::milliseconds>(fdiff);
+
+    if (diff > limit) {
+      return make_pair(9000, M_NONE);
+    }
 
     if (depth == 0 || node.state.isFinalState()) {
 
         Player player = this->getPlayer();
 
-        // La heurística que vamos a utilizar valora dos elementos del juego:
+        // La heurística que vamos a utilizar valora un elemento del juego:
         //
         // - Nuestra puntuación respecto a la del adversario, que queremos
         //   maximizar
-        // - Los puntos que necesita el adversario para ganar, que queremos
-        //   minimizar
-        //
         //  Nuestra heurística será por tanto:
         //    puntuación_jugador - puntuación_adversario
-        //                       + puntos_que_necesita_adversario
 
         int score = node.state.getScore(player);
         int opponent_score;
 
-
-        if (player == Player::J1) {
-            opponent_score = node.state.getScore(Player::J2);
-        } else {
-            opponent_score = node.state.getScore(Player::J1);
-        }
-
-        int opponent_win_short_by = 24 - opponent_score;
-        
-        double value = score - opponent_score + opponent_win_short_by;
+        double value = score - opponent_score;
 
         return std::make_pair(value, M_NONE);
     }
@@ -110,6 +108,7 @@ std::pair<double, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
         Move best_move;
 
         for (int i = 1; i <= 6; i++) {
+            
             Node child_node = {node.state.simulateMove((Move) i), (Move) i};
 
             double value;
@@ -149,8 +148,24 @@ Move Croqueta::nextMove(const vector<Move>& adversary, const GameState& state)
     long timeout = this->getTimeOut();
 
     Node origin = {state, M_NONE};
-    auto path = AlphaBeta(origin, depth, std::numeric_limits<int>::min(),
-                          std::numeric_limits<int>::max(), true);
 
-    return path.second;
+    double new_value;
+    double old_value;
+    pair<double, Move> path;
+    Move move;
+
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 1; i < 20 && new_value != 9000; ++i) {
+      //cerr << "profundidad: " << i << endl; 
+      path = AlphaBeta(origin, i, std::numeric_limits<int>::min(),
+                          std::numeric_limits<int>::max(), true);
+      new_value = path.first;
+
+      if (new_value != 9000) {
+        old_value = new_value;
+        move = path.second;
+      }
+    }
+
+    return move;
 }
