@@ -38,7 +38,7 @@ string Croqueta::getName()
     return "Croqueta"; // Sustituir por el nombre del bot
 }
 
-std::pair<int, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
+std::pair<double, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
         int beta, bool maximize)
 {
 
@@ -60,6 +60,7 @@ std::pair<int, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
         int score = node.state.getScore(player);
         int opponent_score;
 
+
         if (player == Player::J1) {
             opponent_score = node.state.getScore(Player::J2);
         } else {
@@ -67,8 +68,8 @@ std::pair<int, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
         }
 
         int opponent_win_short_by = 24 - opponent_score;
-
-        int value = score - opponent_score + opponent_win_short_by;
+        
+        double value = score - opponent_score + opponent_win_short_by;
 
         return std::make_pair(value, M_NONE);
     }
@@ -80,7 +81,7 @@ std::pair<int, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
         for (int i = 1; i <= 6; i++) {
             Node child_node = {node.state.simulateMove((Move) i), (Move) i};
 
-            int value;
+            double value;
 
             // Tener que maximizar o minimizar el siguiente nodo del árbol
             // dependerá de si vuelve a ser el turno del bot.
@@ -111,7 +112,7 @@ std::pair<int, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
         for (int i = 1; i <= 6; i++) {
             Node child_node = {node.state.simulateMove((Move) i), (Move) i};
 
-            int value;
+            double value;
 
             // Tener que maximizar o minimizar el siguiente nodo del árbol
             // dependerá de si vuelve a ser el turno del bot.
@@ -142,7 +143,7 @@ std::pair<int, Move> Croqueta::AlphaBeta(Node node, int depth, int alpha,
 Move Croqueta::nextMove(const vector<Move>& adversary, const GameState& state)
 {
 
-    int depth = 12;
+    int depth = 15;
 
     Player turno = this->getPlayer();
     long timeout = this->getTimeOut();

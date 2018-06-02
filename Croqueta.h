@@ -41,7 +41,7 @@ class Croqueta: Bot
     //
     // La función devuelve el un pair que contiene el valor del nodo elegido
     // y el movimiento necesario para llegar a él.
-    std::pair<int, Move> AlphaBeta(Node node, int depth, int alpha,
+    std::pair<double, Move> AlphaBeta(Node node, int depth, int alpha,
                                    int beta, bool maximize);
 
 };
