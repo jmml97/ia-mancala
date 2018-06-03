@@ -1,8 +1,8 @@
 
 all:
-	g++ -o Croqueta *.cpp -I./ -lm -std=c++11
+	g++ -o LordVoldebot *.cpp -I./ -lm -std=c++11
 
 
 clean:
-	rm Croqueta
+	rm LordVoldebot
 

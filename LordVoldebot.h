@@ -1,5 +1,5 @@
 /*
- * Croqueta.h
+ * LordVoldebot.h
  *
  *  Created on: 15 mayo 2018
  *      Author: jmml
@@ -7,8 +7,8 @@
 
 #include "Bot.h"
 
-#ifndef CROQUETA_H_
-#define CROQUETA_H_
+#ifndef LORDVOLDEBOT_H_
+#define LORDVOLDEBOT_H_
 
 struct Node {
 
@@ -17,11 +17,11 @@ struct Node {
 
 };
 
-class Croqueta: Bot
+class LordVoldebot: Bot
 {
   public:
-    Croqueta();
-    ~Croqueta();
+    LordVoldebot();
+    ~LordVoldebot();
 
 
     void initialize();
@@ -46,4 +46,4 @@ class Croqueta: Bot
 
 };
 
-#endif /* CROQUETA_H_ */
+#endif /* LORDVOLDEBOT_H_ */
